@@ -18,6 +18,11 @@ const AtlasManager = ( function () {
             // Define the center
             let cx = -sprite.frame.w * 0.5; 
             let cy = -sprite.frame.h * 0.5;
+            // Update the offset if the sprite is trimmed
+            if( sprite.trimmed ) {
+                cx = sprite.spriteSourcesize.x - ( sprite.sourceSize.w * 0.5 );
+                cy = sprite.spriteSourcesize.y - ( sprite.sourceSize.h * 0.5 );
+            }
             // Define the sprite for this sheet
             defSprite( key, sprite.frame.x, sprite.frame.y, sprite.frame.w, sprite.frame.h, cx, cy );
         }

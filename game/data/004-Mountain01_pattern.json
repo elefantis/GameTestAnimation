@@ -1,0 +1,14 @@
+{ "columns":8,
+ "image":"game/assets/004-Mountain01.png",
+ "imageheight":896,
+ "imagewidth":256,
+ "margin":0,
+ "name":"004-Mountain01",
+ "spacing":0,
+ "tilecount":224,
+ "tiledversion":"1.2.0",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":1.2
+}

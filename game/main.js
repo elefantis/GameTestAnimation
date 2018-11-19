@@ -5,7 +5,7 @@ const PressedKeys = [ ];
 
 ( function setup() {
     // Config the canvas and context
-    canvas.style.backgroundColor = "white";
+    canvas.style.backgroundColor = "red";
     canvas.width = WIDTH;
     canvas.height = HEIGHT;
     ctx.fillStyle = "black";

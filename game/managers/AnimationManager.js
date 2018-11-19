@@ -32,8 +32,7 @@ const AnimationManager = ( function() {
     }
 
     var animate = function() {
-        AtlasManager.drawSprite( assets[ frame ], 600, 192 )
-
+        AtlasManager.drawSprite( assets[ frame ], 600, 192 );
         time = Math.floor( ( time + 1 ) % frameRate );
         if( time === 0 ) {
             frame = ( frame + 1 ) % frameLength;
