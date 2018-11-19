@@ -6,7 +6,23 @@ const MapManager = ( function( ) {
     var _tileSize = { "x": 32, "y": 32 };
     var _pixelSize = { "x": 32, "y": 32 };
     var _fullyLoaded = false;
+    var _viewRect = {};
 
+    var setup = function() {
+        _viewRect = {
+            "x": 900,
+            "y": 690,
+            "w": WIDTH,
+            "h": HEIGHT
+        }
+
+
+        Loader.loadJSON( 'game/data/map2.json').then( ( data ) => {
+            parseMapJson( data );
+        }).catch( ( error ) => {
+            console.log( error );
+        });
+    }
     
     const parseMapJson = function( mapJSON ) {
         _currMapData = mapJSON;
@@ -18,6 +34,7 @@ const MapManager = ( function( ) {
         _tileSize.y = map.tileheight;
         _pixelSize.x = _numXTiles * _tileSize.x;
         _pixelSize.y = _numYTiles * _tileSize.y;
+        console.log(_numXTiles, _numYTiles,  )
         // Load our tileset if we are a client
         for( let i in map.tilesets ) {
             var img = new Image();
@@ -74,9 +91,19 @@ const MapManager = ( function( ) {
                 // Get the x, y tile position
                 var worldX = Math.floor( tileIndex % _numXTiles ) * _tileSize.x;
                 var worldY = Math.floor( tileIndex / _numYTiles ) * _tileSize.y;
+                // Draw only into the screen
+                if( ( worldX + _tileSize.x ) < _viewRect.x || 
+                ( worldY + _tileSize.y ) < _viewRect.y || 
+                worldX > _viewRect.x + _viewRect.w ||
+                worldY > _viewRect.y + _viewRect.h )
+                {
+                    continue;
+                }
+                // Adjust all the visible tiles to draw at canvas origin
+                worldX -= _viewRect.x;
+                worldY -= _viewRect.y;
+                
                 // Draw the tile
-                // console.log( tPKT.img, tPKT.px, tPKT.py, 
-                //     _tileSize.x, _tileSize.y, worldX, worldY, _tileSize.x, _tileSize.y)
                 ctx.drawImage( tPKT.img, tPKT.px, tPKT.py, 
                     _tileSize.x, _tileSize.y, worldX, worldY, 
                     _tileSize.x, _tileSize.y );
@@ -84,14 +111,7 @@ const MapManager = ( function( ) {
         }
     }
 
-    var setup = function() {
-        Loader.loadJSON( 'game/data/map1.json').then( ( data ) => {
-            
-            parseMapJson( data );
-        }).catch( ( error ) => {
-            console.log( error );
-        });
-    }
+    
 
     return {
        render: draw,
