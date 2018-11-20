@@ -10,8 +10,8 @@ const MapManager = ( function( ) {
 
     var setup = function() {
         _viewRect = {
-            "x": 900,
-            "y": 690,
+            "x": 0,
+            "y": 0,
             "w": WIDTH,
             "h": HEIGHT
         }
@@ -90,7 +90,7 @@ const MapManager = ( function( ) {
                 var tPKT = getTilePacket( tID ) ;
                 // Get the x, y tile position
                 var worldX = Math.floor( tileIndex % _numXTiles ) * _tileSize.x;
-                var worldY = Math.floor( tileIndex / _numYTiles ) * _tileSize.y;
+                var worldY = Math.floor( tileIndex / _numXTiles ) * _tileSize.y;
                 // Draw only into the screen
                 if( ( worldX + _tileSize.x ) < _viewRect.x || 
                 ( worldY + _tileSize.y ) < _viewRect.y || 
@@ -111,7 +111,12 @@ const MapManager = ( function( ) {
         }
     }
 
-    
+    const centerAt = function( x, y ) {
+        _viewRect.w = WIDTH;
+        _viewRect.h = HEIGHT;
+        _viewRect.x = x - WIDTH / 2;
+        _viewRect.y = y - HEIGHT / 2;
+    }
 
     return {
        render: draw,
