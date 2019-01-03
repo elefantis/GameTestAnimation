@@ -5,7 +5,6 @@ function Menu( game ) {
     AnimationManager.setup();
     MapManager.setup();
     
-
     this.update = function() {
         if( PressedKeys[ 32 ] ) {
             game.changeState( "level1" );

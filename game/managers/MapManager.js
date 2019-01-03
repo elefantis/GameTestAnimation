@@ -22,7 +22,6 @@ const MapManager = ( function( ) {
         }).catch( ( error ) => {
             console.log( error );
         });
-
     }
     
     const parseMapJson = function( mapJSON ) {
@@ -31,6 +30,8 @@ const MapManager = ( function( ) {
         var imgLoadCount = 0;
         _numXTiles = map.width;
         _numYTiles = map.height;
+        console.log( map );
+        console.log( _numXTiles, _numYTiles,  map.width, map.height )
         _tileSize.x = map.tilewidth;
         _tileSize.y = map.tileheight;
         _pixelSize.x = _numXTiles * _tileSize.x;
@@ -88,10 +89,10 @@ const MapManager = ( function( ) {
     }
 
     const preDrawCache = function( ) {
-        var xCanvasCount = 1 + Math.floor( _pixelSize.x / _tileSize.x );
-        var yCanvasCount = 1 + Math.floor( _pixelSize.y / _tileSize.y );
+        var xCanvasCount = _numXTiles;
+        var yCanvasCount = _numYTiles;
 
-        console.log( _pixelSize.x, _tileSize.x,  xCanvasCount ) 
+        console.log( xCanvasCount, yCanvasCount ) 
         for( let yC = 0; yC < yCanvasCount; yC++ ) {
             for( let xC = 0; xC < xCanvasCount; xC++ ) {
                 var k = new CanvasTile();
@@ -106,16 +107,15 @@ const MapManager = ( function( ) {
     }
 
     const fillCanvasTile = function( ctile ) {
-        var ctx = ctile.ctx;
-        ctx.fillRect( 0, 0, ctile.w, ctile.h );
+        var ctx2 = ctile.ctx;
+        ctx2.fillRect( 0, 0, ctile.w, ctile.h );
         var vRect = {
             top: ctile.y,
-            right: ctile.x + ctile.w,
-            bottom: ctile.y + ctile.h,
             left: ctile.x,
-        }
+            bottom: ctile.y + ctile.h,
+            right: ctile.x + ctile.w,
+        };
         
-
         for( let layerIdx in _currMapData.layers ) {
             if( _currMapData.layers[ layerIdx ].type != "tilelayer" ) {
                 continue;
@@ -132,8 +132,8 @@ const MapManager = ( function( ) {
                 var worldY = Math.floor( tileIndex / _numXTiles ) * _tileSize.y;
                 
                 var visible = intersectRect( vRect, {
-                    left: worldX,
                     top: worldY,
+                    left: worldX,
                     bottom: worldY + _tileSize.y,
                     right: worldX + _tileSize.x,
                 });
@@ -144,7 +144,7 @@ const MapManager = ( function( ) {
                 worldY -= vRect.top;
                 
                 // Draw the tile
-                ctx.drawImage( tPKT.img, tPKT.px, tPKT.py, 
+                ctx2.drawImage( tPKT.img, tPKT.px, tPKT.py, 
                     _tileSize.x, _tileSize.y, worldX, worldY, 
                     _tileSize.x, _tileSize.y );
             }
@@ -152,8 +152,8 @@ const MapManager = ( function( ) {
     }
 
     const intersectRect = function( r1, r2 ) {
-        return !( r2.left > r1.right || r2.right < r1.left || 
-                  r2.top > r1.bottom || r2.bottom < r2.right );
+        return !( r2.left > r1.right || r2.right <  r1.left || 
+                  r2.top > r1.bottom || r2.bottom < r2.top );
     }
 
     const centerAt = function( x, y ) {
