@@ -1,25 +1,35 @@
-var CanvasTile = ( function() {
-    var _x = 0;
-    var _y = 0;
-    var _w = 100;
-    var _h = 100;
-    var _cvsHdl = null;
-    var _ctx = null;
+function CanvasTile() {
+    this.x = 0;
+    this.y = 0;
+    this.w = 100;
+    this.h = 100;
+    this.cvsHdl = null;
+    this.ctx = null;
 
-    var create = function( width, height ) {
-        _x = -1;
-        _y = -1;
-        _w = width;
-        _h = height;
+    this.create = function( width, height ) {
+        this.x = -1;
+        this.y = -1;
+        this.w = width;
+        this.h = height;
         var can2 = document.createElement( "canvas" );
         can2.width = width;
         can2.height = height;
-        _cvsHdl = can2;
-        _ctx = can2.getContext( "2d" );
-
+        this.cvsHdl = can2;
+        this.ctx = can2.getContext( "2d" );
     }
 
-    return {
-
+    this.isVisible = function () {
+        var r2 = MapManager.viewRect;
+        return MapManager.intersectRect( {
+            top: this.y,
+            left: this.x,
+            bottom: this.y + this.h,
+            right: this.x + this.w
+        }, {
+            top: r2.y,
+            left: r2.x,
+            bottom: r2.y + r2.h,
+            right: r2.x + r2.w
+        } );
     }
-} )();
+}

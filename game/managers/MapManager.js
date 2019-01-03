@@ -7,6 +7,7 @@ const MapManager = ( function( ) {
     var _pixelSize = { "x": 32, "y": 32 };
     var _fullyLoaded = false;
     var _viewRect = {};
+    var _canvasTileArray = [ ];
 
     var setup = function() {
         _viewRect = {
@@ -16,12 +17,12 @@ const MapManager = ( function( ) {
             "h": HEIGHT
         }
 
-
         Loader.loadJSON( 'game/data/map2.json').then( ( data ) => {
             parseMapJson( data );
         }).catch( ( error ) => {
             console.log( error );
         });
+
     }
     
     const parseMapJson = function( mapJSON ) {
@@ -34,14 +35,14 @@ const MapManager = ( function( ) {
         _tileSize.y = map.tileheight;
         _pixelSize.x = _numXTiles * _tileSize.x;
         _pixelSize.y = _numYTiles * _tileSize.y;
-        console.log(_numXTiles, _numYTiles,  )
+        // console.log( _numXTiles, _numYTiles,  )
         // Load our tileset if we are a client
         for( let i in map.tilesets ) {
             var img = new Image();
             img.onload = function() {
                 imgLoadCount++;
                 if( imgLoadCount === map.tilesets.length ) {
-                    _fullyLoaded = true;
+                    preDrawCache();
                 }
             }
             console.log( map.tilesets[ i ].source )
@@ -79,29 +80,68 @@ const MapManager = ( function( ) {
         // console.log( _fullyLoaded)
         if( !_fullyLoaded ) return;
 
+        for( let r1 of _canvasTileArray ) {
+            if( r1.isVisible( ) ) {
+                ctx.drawImage( r1.cvsHdl, r1.x - _viewRect.x, r1.y - _viewRect.y );
+            }
+        }
+    }
+
+    const preDrawCache = function( ) {
+        var xCanvasCount = 1 + Math.floor( _pixelSize.x / _tileSize.x );
+        var yCanvasCount = 1 + Math.floor( _pixelSize.y / _tileSize.y );
+
+        console.log( _pixelSize.x, _tileSize.x,  xCanvasCount ) 
+        for( let yC = 0; yC < yCanvasCount; yC++ ) {
+            for( let xC = 0; xC < xCanvasCount; xC++ ) {
+                var k = new CanvasTile();
+                k.create( _tileSize.x, _tileSize.y );
+                k.x = xC * _tileSize.x;
+                k.y = yC * _tileSize.y;
+                _canvasTileArray.push( k );
+                fillCanvasTile( k );
+            }
+        }
+        _fullyLoaded = true;
+    }
+
+    const fillCanvasTile = function( ctile ) {
+        var ctx = ctile.ctx;
+        ctx.fillRect( 0, 0, ctile.w, ctile.h );
+        var vRect = {
+            top: ctile.y,
+            right: ctile.x + ctile.w,
+            bottom: ctile.y + ctile.h,
+            left: ctile.x,
+        }
+        
+
         for( let layerIdx in _currMapData.layers ) {
             if( _currMapData.layers[ layerIdx ].type != "tilelayer" ) {
                 continue;
             }
             var data = _currMapData.layers[ layerIdx ].data;
-            for( let tileIndex in data ){
+            for( let tileIndex in data ) {
                 var tID = data[ tileIndex ];
                 if( data[ tileIndex ] === 0) continue;
+                
                 var tPKT = getTilePacket( tID ) ;
+                
                 // Get the x, y tile position
                 var worldX = Math.floor( tileIndex % _numXTiles ) * _tileSize.x;
                 var worldY = Math.floor( tileIndex / _numXTiles ) * _tileSize.y;
-                // Draw only into the screen
-                if( ( worldX + _tileSize.x ) < _viewRect.x || 
-                ( worldY + _tileSize.y ) < _viewRect.y || 
-                worldX > _viewRect.x + _viewRect.w ||
-                worldY > _viewRect.y + _viewRect.h )
-                {
-                    continue;
-                }
-                // Adjust all the visible tiles to draw at canvas origin
-                worldX -= _viewRect.x;
-                worldY -= _viewRect.y;
+                
+                var visible = intersectRect( vRect, {
+                    left: worldX,
+                    top: worldY,
+                    bottom: worldY + _tileSize.y,
+                    right: worldX + _tileSize.x,
+                });
+
+                if( !visible ) continue;
+
+                worldX -= vRect.left;
+                worldY -= vRect.top;
                 
                 // Draw the tile
                 ctx.drawImage( tPKT.img, tPKT.px, tPKT.py, 
@@ -109,6 +149,11 @@ const MapManager = ( function( ) {
                     _tileSize.x, _tileSize.y );
             }
         }
+    }
+
+    const intersectRect = function( r1, r2 ) {
+        return !( r2.left > r1.right || r2.right < r1.left || 
+                  r2.top > r1.bottom || r2.bottom < r2.right );
     }
 
     const centerAt = function( x, y ) {
@@ -121,5 +166,10 @@ const MapManager = ( function( ) {
     return {
        render: draw,
        setup: setup,
+       viewRect: _viewRect,
+       centerAt: centerAt,
+       intersectRect: intersectRect,
+       preDrawCache: preDrawCache,
     };
+
 } ) ( );
