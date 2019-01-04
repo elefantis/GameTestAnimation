@@ -30,13 +30,10 @@ const MapManager = ( function( ) {
         var imgLoadCount = 0;
         _numXTiles = map.width;
         _numYTiles = map.height;
-        console.log( map );
-        console.log( _numXTiles, _numYTiles,  map.width, map.height )
         _tileSize.x = map.tilewidth;
         _tileSize.y = map.tileheight;
         _pixelSize.x = _numXTiles * _tileSize.x;
         _pixelSize.y = _numYTiles * _tileSize.y;
-        // console.log( _numXTiles, _numYTiles,  )
         // Load our tileset if we are a client
         for( let i in map.tilesets ) {
             var img = new Image();
@@ -46,7 +43,6 @@ const MapManager = ( function( ) {
                     preDrawCache();
                 }
             }
-            console.log( map.tilesets[ i ].source )
             img.src = map.tilesets[ i ].source;
             var ts = {
                 "firstgid": map.tilesets[ i ].firstgid,
@@ -78,7 +74,6 @@ const MapManager = ( function( ) {
     }
 
     const draw = function() {
-        // console.log( _fullyLoaded)
         if( !_fullyLoaded ) return;
 
         for( let r1 of _canvasTileArray ) {
@@ -92,7 +87,6 @@ const MapManager = ( function( ) {
         var xCanvasCount = _numXTiles;
         var yCanvasCount = _numYTiles;
 
-        console.log( xCanvasCount, yCanvasCount ) 
         for( let yC = 0; yC < yCanvasCount; yC++ ) {
             for( let xC = 0; xC < xCanvasCount; xC++ ) {
                 var k = new CanvasTile();
@@ -152,21 +146,26 @@ const MapManager = ( function( ) {
     }
 
     const intersectRect = function( r1, r2 ) {
-        return !( r2.left > r1.right || r2.right <  r1.left || 
-                  r2.top > r1.bottom || r2.bottom < r2.top );
+        return !(   r2.left > r1.right || 
+                    r2.right < r1.left || 
+                    r2.top > r1.bottom || 
+                    r2.bottom < r1.top );
     }
 
     const centerAt = function( x, y ) {
-        _viewRect.w = WIDTH;
-        _viewRect.h = HEIGHT;
         _viewRect.x = x - WIDTH / 2;
         _viewRect.y = y - HEIGHT / 2;
+        //console.log( x, y, _viewRect)
+    }
+
+    const getViewRect = function() {
+        return _viewRect;
     }
 
     return {
        render: draw,
        setup: setup,
-       viewRect: _viewRect,
+       getViewRect: getViewRect,
        centerAt: centerAt,
        intersectRect: intersectRect,
        preDrawCache: preDrawCache,

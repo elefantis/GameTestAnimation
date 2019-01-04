@@ -9,6 +9,7 @@ const PressedKeys = [ ];
     canvas.width = WIDTH;
     canvas.height = HEIGHT;
     ctx.fillStyle = "black";
+    ctx.strokeStyle = "red";
 
     // Set the Key event listeners
     document.addEventListener( "keydown", function( e ) {

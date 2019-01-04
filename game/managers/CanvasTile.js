@@ -19,7 +19,7 @@ function CanvasTile() {
     }
 
     this.isVisible = function () {
-        var r2 = MapManager.viewRect;
+        var r2 = MapManager.getViewRect();
         return MapManager.intersectRect( {
             top: this.y,
             left: this.x,
