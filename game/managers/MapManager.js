@@ -11,8 +11,8 @@ const MapManager = ( function( ) {
 
     var setup = function() {
         _viewRect = {
-            "x": 0,
-            "y": 0,
+            "x": WIDTH / 2,
+            "y": HEIGHT / 2,
             "w": WIDTH,
             "h": HEIGHT
         }
@@ -102,7 +102,7 @@ const MapManager = ( function( ) {
 
     const fillCanvasTile = function( ctile ) {
         var ctx2 = ctile.ctx;
-        ctx2.fillRect( 0, 0, ctile.w, ctile.h );
+        ctx2.clearRect( 0, 0, ctile.w, ctile.h );
         var vRect = {
             top: ctile.y,
             left: ctile.x,
@@ -153,9 +153,29 @@ const MapManager = ( function( ) {
     }
 
     const centerAt = function( x, y ) {
-        _viewRect.x = x - WIDTH / 2;
-        _viewRect.y = y - HEIGHT / 2;
-        //console.log( x, y, _viewRect)
+        _viewRect.x =  x - WIDTH / 2;
+        _viewRect.y =  y - HEIGHT / 2;
+    }
+
+    const moveCenter = function( dx, dy) {
+        if( _viewRect.x <= 0 && dx < 0 ){
+            dx = 0;
+            _viewRect.x = 0;
+        } 
+        if( _viewRect.y <= 0 && dy < 0 ){
+            dy = 0;
+            _viewRect.y = 0;
+        }
+        if( ( ( _viewRect.x + WIDTH ) >= _pixelSize.x ) && dx > 0 ){
+            dx = 0;
+            _viewRect.x = _pixelSize.x - WIDTH;
+        } 
+        if( ( ( _viewRect.y + HEIGHT ) >= _pixelSize.y ) && dy > 0 ){
+            dy = 0;
+            _viewRect.y = _pixelSize.y - HEIGHT ;
+        }
+        _viewRect.x += dx;
+        _viewRect.y +=  dy;
     }
 
     const getViewRect = function() {
@@ -169,6 +189,7 @@ const MapManager = ( function( ) {
        centerAt: centerAt,
        intersectRect: intersectRect,
        preDrawCache: preDrawCache,
+       moveCenter: moveCenter
     };
 
 } ) ( );

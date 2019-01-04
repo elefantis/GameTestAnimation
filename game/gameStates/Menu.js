@@ -11,11 +11,12 @@ function Menu( game ) {
         }
 
         // Move the canvas 
-        if( PressedKeys[ 37 ] ) x -= scrollingSpeed;
-        if( PressedKeys[ 38 ] ) y -= scrollingSpeed;
-        if( PressedKeys[ 39 ] ) x += scrollingSpeed;
-        if( PressedKeys[ 40 ] ) y += scrollingSpeed;
-        MapManager.centerAt( x,  y );
+        if( PressedKeys[ 37 ] ) MapManager.moveCenter( -scrollingSpeed, 0 );
+        if( PressedKeys[ 38 ] ) MapManager.moveCenter( 0, -scrollingSpeed );
+        if( PressedKeys[ 39 ] ) MapManager.moveCenter( scrollingSpeed, 0 );
+        if( PressedKeys[ 40 ] ) MapManager.moveCenter( 0, scrollingSpeed );
+
+        
     }
 
     this.render = function() {
