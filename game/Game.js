@@ -14,7 +14,6 @@ function Game() {
     } 
 
     this.changeState = function( newState ) {
-        //console.log( states[ newState ] )
         if ( !states[ newState ] ) {
             state = states[ "menu" ];
         } else {

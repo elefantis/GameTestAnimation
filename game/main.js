@@ -1,7 +1,7 @@
 const canvas = document.getElementById( "canvas" );
 const ctx = canvas.getContext( "2d" );
 const WIDTH = 800, HEIGHT = 600;
-const PressedKeys = [ ];
+const keyState = [ ];
 
 ( function setup() {
     // Config the canvas and context
@@ -12,14 +12,9 @@ const PressedKeys = [ ];
     ctx.strokeStyle = "red";
 
     // Set the Key event listeners
-    document.addEventListener( "keydown", function( e ) {
-        e.preventDefault();
-        PressedKeys[ e.keyCode ] = true;
-    } );    
-    
-    document.addEventListener( "keyup", function( e ) {
-        PressedKeys[ e.keyCode ] = false;
-    } );    
+    document.addEventListener( "keydown", onKeyDown );
+    document.addEventListener( "keyup", onKeyUp );
+    document.addEventListener( "mousemove", onMouseMove );    
     
     // Init the game
     const game = new Game();
@@ -42,3 +37,16 @@ const PressedKeys = [ ];
         game.render();
     }
 } ) ( );
+
+function onKeyDown( event ) {
+    InputManager.onKeyDownEvent( event.keyCode, event );
+}
+
+function onKeyUp( event ) {
+    InputManager.onKeyUpEvent( event.keyCode, event );
+}
+
+function onMouseMove( event ) {
+    var posX = event.clientX;
+    var posY = event.clientY;
+}
